@@ -30,7 +30,6 @@
 </nav>
 
 <header class="hero">
-  <canvas id="lidar-canvas" aria-hidden="true"></canvas>
   <div class="hero-inner">
     <div class="logo-strip">
       <a href="https://bigdataieee.org/BigData2026/"><img src="ieee-bigdata-logo.png" alt="IEEE Big Data 2026 — Dec 14–17, 2026, Phoenix, Arizona — 80th Anniversary Celebration"></a>
@@ -62,6 +61,21 @@
       <div class="fact"><div class="k">Prize pool</div><div class="v">USD 1,000</div></div>
       <div class="fact"><div class="k">Platform</div><div class="v">Codabench</div></div>
     </div>
+
+    <figure class="hero-figure">
+      <div class="hf-grid">
+        <div></div>
+        <div class="hf-col lumpi-c">LUMPI</div>
+        <div class="hf-col v2x-c">V2X-Real</div>
+        <div class="hf-row">Real</div>
+        <div class="hf-cell lumpi-cell"><img src="fig-lumpi-real.png" alt="Real LUMPI LiDAR frame"></div>
+        <div class="hf-cell v2x-cell"><img src="fig-v2x-real.png" alt="Real V2X-Real LiDAR frame"></div>
+        <div class="hf-row">Synthetic</div>
+        <div class="hf-cell lumpi-cell"><img src="fig-lumpi-syn.png" alt="Synthetic UrbanTwin LiDAR frame targeting LUMPI"></div>
+        <div class="hf-cell v2x-cell"><img src="fig-v2x-syn.png" alt="Synthetic UrbanTwin LiDAR frame targeting V2X-Real"></div>
+      </div>
+      <figcaption>Real or synthetic? Side-by-side frames from the challenge's two target datasets, reproduced from <a href="https://arxiv.org/pdf/2509.02903">our UrbanTwin paper</a>. We have built digital twins this close to reality — your task is to close the gap further.</figcaption>
+    </figure>
   </div>
 </header>
 
@@ -351,75 +365,5 @@
   </div>
 </footer>
 
-<script>
-(function () {
-  var canvas = document.getElementById('lidar-canvas');
-  if (!canvas) return;
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var ctx = canvas.getContext('2d');
-  var pts = [], W, H, cx, cy;
-
-  function resize() {
-    var r = canvas.parentElement.getBoundingClientRect();
-    W = canvas.width = r.width * devicePixelRatio;
-    H = canvas.height = r.height * devicePixelRatio;
-    cx = W * 0.72; cy = H * 0.55;
-    seed();
-  }
-  function seed() {
-    pts = [];
-    var rings = 26;
-    for (var i = 0; i < rings; i++) {
-      var rad = 30 + i * (Math.min(W, H) / rings) * 0.75;
-      var n = 40 + i * 7;
-      for (var j = 0; j < n; j++) {
-        var a = Math.random() * Math.PI * 2;
-        var jitter = (Math.random() - 0.5) * 14;
-        pts.push({ a: a, r: rad + jitter, z: Math.random() });
-      }
-    }
-  }
-  var sweep = 0;
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    // scan rings
-    ctx.strokeStyle = 'rgba(142,162,255,0.06)';
-    ctx.lineWidth = 1;
-    for (var g = 1; g <= 8; g++) {
-      ctx.beginPath();
-      ctx.arc(cx, cy, g * Math.min(W, H) / 9, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    for (var i = 0; i < pts.length; i++) {
-      var p = pts[i];
-      var x = cx + Math.cos(p.a) * p.r * 1.6;   // squash to feel like a ground plane
-      var y = cy + Math.sin(p.a) * p.r * 0.55;
-      if (x < -20 || x > W + 20 || y < -20 || y > H + 20) continue;
-      var d = ((p.a - sweep) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-      var glow = Math.max(0, 1 - d / 1.4);      // brighter just behind the sweep
-      var base = 0.10 + p.z * 0.14;
-      var alpha = base + glow * 0.55;
-      var warm = p.z > 0.5;
-      ctx.fillStyle = warm
-        ? 'rgba(255,180,84,' + alpha * 0.8 + ')'
-        : 'rgba(79,214,224,' + alpha * 0.8 + ')';
-      var s = (0.9 + p.z * 1.4) * devicePixelRatio;
-      ctx.fillRect(x, y, s, s);
-    }
-    // sweep line
-    ctx.strokeStyle = 'rgba(142,162,255,0.35)';
-    ctx.lineWidth = 1.2 * devicePixelRatio;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + Math.cos(sweep) * W, cy + Math.sin(sweep) * W * 0.4);
-    ctx.stroke();
-    sweep += 0.008;
-  }
-  function loop() { draw(); requestAnimationFrame(loop); }
-  window.addEventListener('resize', resize);
-  resize();
-  if (reduced) { sweep = 2.2; draw(); } else { loop(); }
-})();
-</script>
 </body>
 </html>
