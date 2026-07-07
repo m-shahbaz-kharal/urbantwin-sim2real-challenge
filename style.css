@@ -90,12 +90,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .fact .k { font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
 .fact .v { font-family: "Space Grotesk", sans-serif; font-size: 1.12rem; font-weight: 600; margin-top: 2px; }
 
-/* logo strip — prominent row at the top of the hero */
-.logo-strip { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+/* logo strip — sits before the title, matching its text height */
+.title-row { display: flex; align-items: center; gap: 20px; }
+.logo-strip { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .logo-strip a { display: block; line-height: 0; }
-.logo-strip img { display: block; height: 96px; width: auto; border-radius: 12px; border: 1px solid var(--line); background: var(--ink-900); }
+.logo-strip img { display: block; height: clamp(2.2rem, 6.6vw, 5rem); width: auto; border-radius: 10px; border: 1px solid var(--line); background: var(--ink-900); }
+.title-row h1 { font-size: clamp(1.05rem, 2.9vw, 2.2rem); }
 .logo-strip a:hover img { border-color: var(--text-dim); }
-@media (max-width: 640px) { .logo-strip img { height: 64px; } }
+@media (max-width: 640px) { .title-row { flex-wrap: wrap; } .logo-strip img { height: 56px; } }
 
 /* hero dates timeline strip */
 .hero-dates { margin-top: 34px; border-top: 2px solid var(--line); padding-top: 18px; display: grid; grid-template-columns: repeat(6, auto); justify-content: space-between; gap: 14px; }
@@ -132,21 +134,21 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .hero-bg .cell:nth-child(3) img, .hero-bg .cell:nth-child(3)::after, .hero-bg .cell:nth-child(3) .cell-label { animation-delay: 9s; }
 .hero-bg .cell:nth-child(4) img, .hero-bg .cell:nth-child(4)::after, .hero-bg .cell:nth-child(4) .cell-label { animation-delay: 13.5s; }
 .cell-label {
-  position: absolute; right: 16px; bottom: 12px; opacity: 0;
-  font-family: "IBM Plex Mono", monospace; font-size: 0.74rem;
-  letter-spacing: 0.16em; text-transform: uppercase;
+  position: absolute; top: 50%; left: 0; opacity: 0;
+  transform: translate(calc(-100% - 14px), -50%);
+  font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
   animation: hf-label 18s linear infinite;
 }
-.lumpi-cell .cell-label { color: rgba(255,180,84,0.6); }
-.v2x-cell .cell-label { color: rgba(79,214,224,0.6); }
+.lumpi-cell .cell-label { color: var(--lumpi); text-shadow: 0 0 12px rgba(255,180,84,0.8); }
+.v2x-cell .cell-label { color: var(--v2x); text-shadow: 0 0 12px rgba(79,214,224,0.8); }
 @keyframes hf-label {
-  0%   { opacity: 0; }
-  3%   { opacity: 0.85; }
-  22%  { opacity: 0.85; }
-  40%  { opacity: 0.45; }
-  90%  { opacity: 0.45; }
-  99%  { opacity: 0; }
-  100% { opacity: 0; }
+  0%    { left: 0%;               opacity: 0; }
+  2%    { opacity: 1; }
+  20%   { opacity: 1; }
+  21.9% { left: calc(100% - 3px); opacity: 1; }
+  22%   { opacity: 0; }
+  100%  { left: calc(100% - 3px); opacity: 0; }
 }
 @keyframes hf-draw {
   0%   { clip-path: inset(0 100% 0 0); opacity: 1; }
