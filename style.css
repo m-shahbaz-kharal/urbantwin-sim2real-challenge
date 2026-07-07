@@ -216,6 +216,12 @@ td .mono, th .mono { font-size: 0.85rem; }
 .track-hero .eyebrow.lumpi { color: var(--lumpi); }
 .track-hero .eyebrow.v2x { color: var(--v2x); }
 
+/* reference lists: bold title line, description on its own line */
+.ref-list { list-style: none; margin-left: 0 !important; gap: 16px !important; }
+.ref-list li { border-left: 2px solid var(--line); padding-left: 16px; }
+.ref-list li > a { display: block; line-height: 1.4; }
+.ref-list .ref-desc { display: block; color: var(--text-dim); font-size: 0.93rem; margin-top: 3px; }
+
 /* citations */
 details.bib { border: 1px solid var(--line); border-radius: var(--radius); background: var(--ink-900); margin-bottom: 12px; }
 details.bib summary { cursor: pointer; padding: 14px 18px; font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 0.98rem; }
