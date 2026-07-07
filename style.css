@@ -89,6 +89,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .fact .k { font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
 .fact .v { font-family: "Space Grotesk", sans-serif; font-size: 1.12rem; font-weight: 600; margin-top: 2px; }
 
+/* logo strip */
+.logo-strip { display: flex; align-items: center; gap: 28px; margin-top: 40px; flex-wrap: wrap; }
+.logo-strip img { height: 72px; width: auto; border-radius: 10px; border: 1px solid var(--line); background: var(--ink-900); }
+.logo-strip a:hover img { border-color: var(--text-dim); }
+
 /* hero dates timeline strip */
 .hero-dates { margin-top: 34px; border-top: 2px solid var(--line); padding-top: 18px; display: grid; grid-template-columns: repeat(6, auto); justify-content: space-between; gap: 14px; }
 .hero-dates .fact .k { font-size: clamp(0.58rem, 0.85vw, 0.74rem); white-space: nowrap; }
