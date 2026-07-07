@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUMPI Track — UrbanTwin Sim2Real LiDAR Challenge</title>
+<meta name="description" content="LUMPI Track of the UrbanTwin Sim2Real LiDAR Challenge at IEEE BigData 2026 Cup: synthesize LiDAR matching the LUMPI Hannover intersection distribution.">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html"><img src="logo.png" alt="UrbanTwin logo">UrbanTwin&nbsp;Sim2Real</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#data">Data</a>
+      <a href="#evaluation">Evaluation</a>
+      <a href="#submission">Submission</a>
+      <a href="#baselines">Baselines</a>
+      <a class="track-v2x" href="v2x.html">V2X-Real Track ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="track-hero lumpi">
+  <div class="wrap">
+    <span class="eyebrow lumpi">Track A · Roadside intersection · 8 classes</span>
+    <h1>LUMPI Track</h1>
+    <p class="sub">Synthesize LiDAR data matching the distribution of <strong>LUMPI</strong> — the Leibniz University Multi-Perspective Intersection dataset, recorded at a live intersection in Hannover, Germany — then prove your sim-only detector on real held-out frames.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-lumpi" href="https://www.codabench.org/competitions/16684/">Compete on Codabench →</a>
+      <a class="btn" href="https://data.uni-hannover.de/dataset/lumpi">Get the real LUMPI data</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap content">
+
+<h2 id="data">Data</h2>
+<p>Real LUMPI data is publicly available from its original release at
+<a href="https://data.uni-hannover.de/dataset/lumpi">data.uni-hannover.de/dataset/lumpi</a>, under its own license.
+We do not redistribute it — obtain it directly from the source.</p>
+
+<h3>Released for participants (starting kit)</h3>
+<ul>
+  <li><code>detection_test_frames/</code> — <strong>50 real LiDAR frames</strong> (point clouds only, no labels) on which you run your detector and submit predictions.</li>
+  <li><code>detection_test_frame_ids.json</code> — the canonical, ordered list of frame IDs your <code>predictions.json</code> must cover.</li>
+  <li><code>forbidden_frames.txt</code> — <strong>100 frame IDs you may not train, validate, or tune on</strong>: the union of the 50 detection-test frames and the 50 realism-reference frames. Honor system, enforced by signed declaration.</li>
+  <li><code>local_eval.py</code> — the exact scoring program shipped to the Codabench worker; reproduces server scores bit-for-bit.</li>
+  <li><code>make_dummy_submission.py</code> — produces a known-bad submission that exercises the format.</li>
+  <li><code>submission_format.md</code> — the full submission spec.</li>
+</ul>
+
+<h3>Held out (organizer-only)</h3>
+<ul>
+  <li>50 real frames used as the realism reference set.</li>
+  <li>Ground-truth boxes for the 50 detection-test frames.</li>
+</ul>
+
+<h3>Categories evaluated</h3>
+<p>This track is scored on <strong>8 object categories</strong>: <em>Person, Car, Bicycle, Motorcycle, Bus, Truck, Van, Unknown</em>.
+The detection score is the mean AP across these categories; classes with zero ground-truth instances in the held-out set are excluded from the mean.
+Splits are stratified random samples with fixed seed 1234, published in the starting kit so anyone can reproduce them.</p>
+
+<h2 id="evaluation">Evaluation</h2>
+<p>Two scores combine into the <em>Combined</em> leaderboard score:</p>
+<pre>score_realism   = mean( norm(CD), norm(MMD), norm(EMD), norm(FPD) )   (lower-is-better → 1 − clip)
+score_detection = norm( AP_3d @ IoU 0.5 )                             (higher-is-better → clip)
+score_combined  = 0.6 · score_detection + 0.4 · score_realism</pre>
+
+<h3>Distributional realism</h3>
+<ol>
+  <li>Your 50 synthetic frames are concatenated into one set; the 50 held-out real reference frames into another.</li>
+  <li>Both are masked to the point-cloud range <code>[-40, -40, -5, 40, 40, 5]</code>.</li>
+  <li>Both are uniformly subsampled to <strong>10,000 points</strong> per side (seed 1234, identical in the local evaluator).</li>
+  <li>One CD, MMD, EMD, and FPD is computed across the full 10,000-point sets. Lower is better for all four.</li>
+</ol>
+
+<h3>3D object detection</h3>
+<p>AP is computed over the 8 track categories at IoU 0.5 (primary) and 0.7 (secondary),
+using the OpenPCDet 7-DoF box format <code>[x, y, z, dx, dy, dz, heading]</code>.
+IoU is oriented-BEV rectangle overlap times Z overlap. Both KITTI 11-point and 40-point interpolated AP
+are reported; the 40-point form is the leaderboard primary. The KITTI truncation/occlusion difficulty
+filter is not applied — it depends on 2D annotations that are unnatural for roadside LiDAR.</p>
+<p>Normalization endpoints are public in <code>config.json</code>, so local and server scores are identical.</p>
+
+<h2 id="submission">Submission format</h2>
+<p>Pack everything into a single <code>submission.zip</code> and upload it on the Codabench <em>Submit</em> tab:</p>
+<pre>submission.zip
+├── synthetic/
+│   ├── 0001.bin … 0050.bin    # exactly 50 files, float32 N×3 (or N×4), ≤ 1.5 MB each
+├── predictions.json            # keys = frame IDs from detection_test_frame_ids.json
+└── declaration.pdf             # signed honor declaration (declaration.txt also accepted)</pre>
+<p><code>predictions.json</code> entries look like:</p>
+<pre>{
+  "&lt;frame_id&gt;": [
+    {"box": [x, y, z, dx, dy, dz, heading], "score": 0.97, "class": "Car"},
+    {"box": [...],                          "score": 0.81, "class": "Person"}
+  ],
+  "&lt;frame_id_2&gt;": []
+}</pre>
+<ul>
+  <li><code>box</code>: 7 floats, OpenPCDet convention — center (m), full extents, heading around +Z (rad).</li>
+  <li><code>score</code>: confidence in [0, 1].</li>
+  <li><code>class</code>: <code>Person</code>, <code>Car</code>, <code>Bicycle</code>, <code>Motorcycle</code>, <code>Bus</code>, <code>Truck</code>, <code>Van</code>, or <code>Unknown</code> (case-insensitive). Unrecognized classes are discarded.</li>
+</ul>
+<p>Required declaration statement (verbatim, case-insensitive):</p>
+<blockquote>I confirm that I did not train on any frame listed in <code>forbidden_frames.txt</code>, and that all submitted detections were produced by a model trained only on synthetic data I generated.</blockquote>
+<p>Scoring typically completes in under 5 minutes; a <em>Detailed Results</em> view shows all component metrics including per-class AP.</p>
+
+<h2 id="baselines">Reference baselines</h2>
+<p>Reported for the <em>Car</em> class only, from prior work — included to show sim→real transfer is achievable on this benchmark. The leaderboard scores mean AP across all 8 categories.</p>
+<div class="table-scroll">
+<table>
+  <tr><th>System</th><th>Car 3D AP @ 0.5</th><th>Car 3D AP @ 0.7</th></tr>
+  <tr><td>SEED (real LUMPI training, IEEE T-ITS 2026)</td><td>0.4270</td><td>n/r</td></tr>
+  <tr><td>SEED (UT-LUMPI synthetic → real LUMPI, IEEE T-ITS 2026)</td><td>0.4474</td><td>n/r</td></tr>
+</table>
+</div>
+
+<h2>Phases</h2>
+<div class="table-scroll">
+<table>
+  <tr><th>Phase</th><th>Dates</th><th>Submissions</th><th>Leaderboard</th></tr>
+  <tr><td>Development</td><td>Jul 1 – Oct 31, 2026</td><td>5/day, 100 total</td><td>Public</td></tr>
+  <tr><td>Final</td><td>Nov 1 – Nov 15, 2026</td><td>5 total</td><td>Hidden until close; determines winners</td></tr>
+</table>
+</div>
+<p style="margin-top:18px"><a class="btn btn-lumpi" href="https://www.codabench.org/competitions/16684/">Enter the LUMPI Track on Codabench →</a></p>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>UrbanTwin Sim2Real LiDAR Challenge · IEEE BigData 2026 Cup</div>
+    <div><a href="index.html">Home</a> · <a href="v2x.html">V2X-Real Track</a> · <a href="mailto:Muhammad.Shahbaz@ucf.edu">Contact</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

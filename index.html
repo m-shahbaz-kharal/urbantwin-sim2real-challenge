@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UrbanTwin Sim2Real LiDAR Challenge — IEEE BigData 2026 Cup</title>
+<meta name="description" content="Synthesize LiDAR data, train detectors on synthetic frames only, and evaluate on real held-out data. Two tracks (LUMPI, V2X-Real) at the IEEE BigData 2026 Cup, Phoenix, AZ.">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html"><img src="logo.png" alt="UrbanTwin logo">UrbanTwin&nbsp;Sim2Real</a>
+    <div class="nav-links">
+      <a href="#tracks">Tracks</a>
+      <a href="#how">How it works</a>
+      <a href="#evaluation">Evaluation</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#rules">Rules</a>
+      <a href="#citations">Citations</a>
+      <a class="track-lumpi" href="lumpi.html">LUMPI ↗</a>
+      <a class="track-v2x" href="v2x.html">V2X-Real ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="lidar-canvas" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <span class="eyebrow">IEEE BigData 2026 Cup · Challenge 04 · Phoenix, AZ · Dec 14–17, 2026</span>
+    <h1>UrbanTwin Sim2Real LiDAR Challenge<br><span class="thin">Train on synthetic. Score on real.</span></h1>
+    <p class="sub">
+      Roadside LiDAR perception is bottlenecked by the cost and rarity of large, well-annotated real
+      datasets. Can synthetic LiDAR data be made realistic enough that a detector trained on it
+      generalizes to real frames? Generate your own synthetic point clouds, train a 3D object
+      detector on them alone, and prove it on real held-out data.
+    </p>
+    <div class="hero-ctas">
+      <a class="btn btn-lumpi" href="https://www.codabench.org/competitions/16684/">Enter LUMPI Track →</a>
+      <a class="btn btn-v2x" href="https://www.codabench.org/competitions/16685/">Enter V2X-Real Track →</a>
+      <a class="btn" href="#how">Read the brief</a>
+    </div>
+    <div class="hero-facts">
+      <div class="fact"><div class="k">Prize pool</div><div class="v">USD 2,000</div></div>
+      <div class="fact"><div class="k">Development opens</div><div class="v">Jul 1, 2026</div></div>
+      <div class="fact"><div class="k">Final deadline</div><div class="v">Nov 15, 2026</div></div>
+      <div class="fact"><div class="k">Platform</div><div class="v">Codabench</div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="tracks">
+  <div class="wrap">
+    <div class="sec-label">Two tracks</div>
+    <h2>Pick your target distribution</h2>
+    <p class="lede">Both tracks share the same protocol — synthesize, train sim-only, submit detections on 50 real frames — but target different real-world roadside LiDAR datasets. You may enter one or both.</p>
+    <div class="tracks">
+      <div class="track-card lumpi">
+        <span class="tag">Track A — Roadside intersection</span>
+        <h3>LUMPI</h3>
+        <p>Match the distribution of LUMPI, the Leibniz University Multi-Perspective Intersection dataset recorded in Hannover, Germany. Scored on 8 object categories.</p>
+        <div class="track-meta">
+          <div><span class="mk">classes</span><span>Person · Car · Bicycle · Motorcycle · Bus · Truck · Van · Unknown</span></div>
+          <div><span class="mk">range</span><span class="mono">[-40, -40, -5, 40, 40, 5]</span></div>
+          <div><span class="mk">real data</span><span><a href="https://data.uni-hannover.de/dataset/lumpi">data.uni-hannover.de/dataset/lumpi</a></span></div>
+        </div>
+        <div class="track-actions">
+          <a class="btn btn-sm btn-lumpi" href="https://www.codabench.org/competitions/16684/">Codabench →</a>
+          <a class="btn btn-sm" href="lumpi.html">Track details</a>
+        </div>
+      </div>
+      <div class="track-card v2x">
+        <span class="tag">Track B — Infrastructure V2X</span>
+        <h3>V2X-Real</h3>
+        <p>Match the infrastructure-centric distribution of V2X-Real, UCLA Mobility Lab's large-scale vehicle-to-everything cooperative perception dataset. Scored on 3 object categories.</p>
+        <div class="track-meta">
+          <div><span class="mk">classes</span><span>vehicle · pedestrian · truck</span></div>
+          <div><span class="mk">range</span><span class="mono">[-40, -40, -8, 40, 40, 2]</span></div>
+          <div><span class="mk">real data</span><span><a href="https://github.com/ucla-mobility/V2X-Real">github.com/ucla-mobility/V2X-Real</a></span></div>
+        </div>
+        <div class="track-actions">
+          <a class="btn btn-sm btn-v2x" href="https://www.codabench.org/competitions/16685/">Codabench →</a>
+          <a class="btn btn-sm" href="v2x.html">Track details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-label">Protocol</div>
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <h4>Get the data</h4>
+        <p>Download the public real dataset from its original source, plus the starting kit with 50 real detection-test frames (point clouds only, no labels).</p>
+      </div>
+      <div class="step">
+        <h4>Synthesize</h4>
+        <p>Generate synthetic LiDAR frames with any approach — simulation (CARLA, LGSVL, custom), generative models (diffusion, GANs, flows), or hybrid pipelines.</p>
+      </div>
+      <div class="step">
+        <h4>Train sim-only</h4>
+        <p>Train a 3D object detector — any architecture — on <em>only your synthetic data</em>. No real labels, ever.</p>
+      </div>
+      <div class="step">
+        <h4>Submit</h4>
+        <p>Upload 50 synthetic frames, your detector's predictions on the 50 real test frames, and a signed honor declaration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="evaluation">
+  <div class="wrap">
+    <div class="sec-label">Scoring</div>
+    <h2>Detection and realism, one combined score</h2>
+    <p class="lede">Leaderboard rank is a single Combined score. Detection is 3D mAP over the track's categories at IoU 0.5 (KITTI 40-point interpolation). Realism compares your 50 synthetic frames against 50 held-out real reference frames at the dataset level (10,000 points per side, seed 1234).</p>
+    <div class="score-formula">score_combined = <span class="w60">0.6 × norm( 3D mAP @ IoU 0.5 )</span> + <span class="w40">0.4 × mean( norm CD, MMD, EMD, FPD )</span></div>
+    <div class="metric-grid">
+      <div class="metric"><div class="abbr">CD</div><p>Chamfer Distance — symmetric squared-L2 nearest-neighbor cost between point sets.</p></div>
+      <div class="metric"><div class="abbr">MMD</div><p>Maximum Mean Discrepancy — Gaussian-kernel two-sample statistic, median-heuristic bandwidth.</p></div>
+      <div class="metric"><div class="abbr">EMD</div><p>Earth Mover's Distance — exact Wasserstein-1 with Euclidean cost via network simplex.</p></div>
+      <div class="metric"><div class="abbr">FPD</div><p>Fréchet Point-cloud Distance — FID-style 2-Wasserstein between fitted 3-variate Gaussians.</p></div>
+    </div>
+    <p class="notice"><strong>Fully reproducible.</strong> The exact scoring program that runs on the Codabench worker ships in the starting kit (<code class="mono">local_eval.py</code>), together with the public normalization endpoints in <code class="mono">config.json</code> — local scores match the server bit-for-bit.</p>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="wrap">
+    <div class="sec-label">Timeline</div>
+    <h2>Important dates</h2>
+    <ul class="timeline">
+      <li><span class="date">JUL 01, 2026</span><div class="what">Development phase opens</div><div class="note">Public leaderboard. Up to 5 submissions/day, 100 total per participant. Use this phase to iterate.</div></li>
+      <li><span class="date">JUL 25, 2026</span><div class="what">Letter of intent</div><div class="note">Tell us you're in.</div></li>
+      <li><span class="date">OCT 31, 2026</span><div class="what">Development phase closes</div></li>
+      <li><span class="date">NOV 01, 2026</span><div class="what">Final phase opens</div><div class="note">Leaderboard hidden until close. 5 total submissions per participant. Development submissions are not carried over — resubmit your best system.</div></li>
+      <li class="milestone"><span class="date">NOV 15, 2026</span><div class="what">Final submissions + challenge report due</div><div class="note">Every team submits a 4–8 page report describing their approach.</div></li>
+      <li><span class="date">NOV 25, 2026</span><div class="what">Winners announced</div></li>
+      <li class="milestone"><span class="date">DEC 14–17, 2026</span><div class="what">IEEE BigData 2026, Phoenix, AZ</div><div class="note">Winning teams present at the conference's Big Data Cup session.</div></li>
+    </ul>
+  </div>
+</section>
+
+<section id="prizes">
+  <div class="wrap">
+    <div class="sec-label">Prizes</div>
+    <h2>USD 1,000 per track</h2>
+    <p class="lede">Awarded from the Final-phase leaderboard, per track. Top-3 teams per track are also invited to submit a full paper to the IEEE BigData 2026 proceedings paper track and present in the workshop session in Phoenix.</p>
+    <div class="prizes">
+      <div class="prize"><div class="place">1st place</div><div class="amount">$500</div></div>
+      <div class="prize"><div class="place">2nd place</div><div class="amount">$300</div></div>
+      <div class="prize"><div class="place">3rd place</div><div class="amount">$200</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="rules">
+  <div class="wrap">
+    <div class="sec-label">Rules</div>
+    <h2>The integrity contract</h2>
+    <p class="lede">Open to anyone — researchers, students, industry teams. One account per team. The foundational rule: 100 frame IDs per track are <em>forbidden</em> — the union of the 50 detection-test frames and the 50 realism-reference frames — enforced by a signed declaration in every submission.</p>
+    <div class="rule-cols">
+      <div class="rule-box allowed">
+        <h3>✓ Allowed</h3>
+        <ul>
+          <li>Any simulation framework or generative model — CARLA, Helios++, OpenScene, NeRFs, diffusion, GANs, custom physics. Open or closed source.</li>
+          <li>Any 3D detector architecture, trained on your synthetic data only.</li>
+          <li>Standard training-time augmentations (rotation, scale, flip, GT-sampling, noise) — they operate on synthetic data.</li>
+          <li>Using the public real train split for hyperparameter selection or domain adaptation, provided no forbidden frame is touched.</li>
+        </ul>
+      </div>
+      <div class="rule-box forbidden">
+        <h3>✕ Forbidden</h3>
+        <ul>
+          <li>Training, validating, tuning on — or observing ground truth from — any frame in <code class="mono">forbidden_frames.txt</code>.</li>
+          <li>Submitting predictions from a model trained on real labels for <em>any</em> roadside-LiDAR dataset. The detector must be sim-only.</li>
+          <li>Probing submissions designed to reverse-engineer the held-out realism reference set via leaderboard signal.</li>
+          <li>Multiple accounts, sub-team accounts, or coordinating across registered teams.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="notice">Organizers may inspect any submission's synthetic frames and predictions for evidence of forbidden-frame leakage. Disqualified participants are removed from the leaderboard and prize consideration. Falsifying the honor declaration is grounds for immediate disqualification.</p>
+  </div>
+</section>
+
+<section id="resources">
+  <div class="wrap">
+    <div class="sec-label">Reference resources</div>
+    <h2>A documented starting point, not a requirement</h2>
+    <p class="lede">We publicly release a complete reference pipeline — synthesis methodology, empirical analysis, ready-to-use synthetic datasets, and open-source LiDAR tooling — for participants who want orientation.</p>
+    <div class="content">
+      <ul>
+        <li><a href="https://arxiv.org/pdf/2509.02903">UrbanTwin: Building High-Fidelity Digital Twins for Sim2Real LiDAR Perception and Evaluation</a> — the synthesis pipeline (arXiv preprint).</li>
+        <li><a href="https://scholar.google.com/scholar?oi=bibs&cluster=6844982498826808010&btnI=1&hl=en">High-Fidelity Digital Twins for Bridging the Sim2Real Gap in LiDAR-Based ITS Perception</a> — deeper empirical analysis including this challenge's realism metrics (IEEE T-ITS, 2026).</li>
+        <li><a href="https://ieeexplore.ieee.org/iel8/8784355/8957420/11357520.pdf">UrbanTwin: Synthetic Roadside LiDAR Datasets</a> (IEEE OJ-ITS, 2026) — 10K annotated frames per dataset, six object categories, for detection, tracking, and segmentation; download at <a href="https://dataverse.harvard.edu/dataverse/ucf-ut">Harvard Dataverse</a>.</li>
+        <li><a href="https://ieeexplore.ieee.org/document/11498694">LiGuard Framework</a> (IEEE T-IV, 2026) — end-to-end LiDAR processing and visualization, with a software-focused companion in <a href="https://joss.theoj.org/papers/10.21105/joss.06751.pdf">JOSS</a>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="citations">
+  <div class="wrap">
+    <div class="sec-label">Citations</div>
+    <h2>If you use the challenge data, baselines, or scoring code</h2>
+    <details class="bib" open>
+      <summary>UrbanTwin publications</summary>
+      <pre>@article{shahbaz2026urbantwin,
+  title   = {UrbanTwin: Synthetic Roadside LiDAR Datasets},
+  author  = {Shahbaz, Muhammad and Agarwal, Shaurya},
+  journal = {IEEE Open Journal of Intelligent Transportation Systems},
+  year    = {2026}
+}
+
+@article{shahbaz2026hifidelity,
+  title   = {High-Fidelity Digital Twins for Bridging the Sim2Real Gap in LiDAR-Based ITS Perception},
+  author  = {Shahbaz, Muhammad and Agarwal, Shaurya},
+  journal = {IEEE Transactions on Intelligent Transportation Systems},
+  year    = {2026}
+}
+
+@article{shahbaz2025urbantwin,
+  title   = {UrbanTwin: Building High-Fidelity Digital Twins for Sim2Real LiDAR Perception and Evaluation},
+  author  = {Shahbaz, Muhammad and Agarwal, Shaurya},
+  journal = {arXiv preprint arXiv:2509.02903},
+  year    = {2025}
+}</pre>
+    </details>
+    <details class="bib">
+      <summary>Underlying real datasets</summary>
+      <pre>@inproceedings{busch2022lumpi,
+  title     = {LUMPI: The Leibniz University Multi-Perspective Intersection Dataset},
+  author    = {Busch, Steffen and Koetsier, Christian and Axmann, Jeldrik and Brenner, Claus},
+  booktitle = {IEEE Intelligent Vehicles Symposium},
+  year      = {2022}
+}
+
+@article{xiang2024v2xreal,
+  title   = {V2X-Real: a Large-Scale Dataset for Vehicle-to-Everything Cooperative Perception},
+  author  = {Xiang, Hao and others},
+  journal = {ECCV},
+  year    = {2024}
+}</pre>
+    </details>
+    <details class="bib">
+      <summary>Detector code and backbones</summary>
+      <pre>@misc{openpcdet2020,
+  title        = {OpenPCDet: An Open-Source Toolbox for 3D Object Detection from Point Clouds},
+  author       = {{OpenPCDet Development Team}},
+  howpublished = {https://github.com/open-mmlab/OpenPCDet},
+  year         = {2020}
+}
+
+@inproceedings{liu2024seed,
+  title     = {SEED: A Simple and Effective 3D DETR in Point Clouds},
+  author    = {Liu, Zhe and Hou, Zhikang and Ye, Xiwu and Wang, Tao and Wang, Jingdong and Bai, Xiang},
+  booktitle = {ECCV},
+  year      = {2024}
+}
+
+@article{yan2018second,
+  title   = {SECOND: Sparsely Embedded Convolutional Detection},
+  author  = {Yan, Yan and Mao, Yuxing and Li, Bo},
+  journal = {Sensors},
+  volume  = {18},
+  number  = {10},
+  year    = {2018}
+}</pre>
+    </details>
+    <details class="bib">
+      <summary>Evaluation metrics</summary>
+      <pre>@inproceedings{achlioptas2018learning,
+  title     = {Learning Representations and Generative Models for 3D Point Clouds},
+  author    = {Achlioptas, Panos and Diamanti, Olga and Mitliagkas, Ioannis and Guibas, Leonidas},
+  booktitle = {ICML},
+  year      = {2018}
+}
+
+@article{flamary2021pot,
+  title   = {POT: Python Optimal Transport},
+  author  = {Flamary, R{\'e}mi and Courty, Nicolas and others},
+  journal = {Journal of Machine Learning Research},
+  volume  = {22},
+  number  = {78},
+  year    = {2021}
+}</pre>
+    </details>
+  </div>
+</section>
+
+<section id="organizers">
+  <div class="wrap">
+    <div class="sec-label">Organizers</div>
+    <h2>UCF Urbanity Lab</h2>
+    <div class="orgs">
+      <div class="org"><div class="name">Muhammad Shahbaz</div><div class="aff">University of Central Florida</div><div class="aff"><a href="mailto:Muhammad.Shahbaz@ucf.edu">Muhammad.Shahbaz@ucf.edu</a></div></div>
+      <div class="org"><div class="name">Shaurya Agarwal</div><div class="aff">University of Central Florida</div></div>
+    </div>
+    <p class="lede" style="margin-top:26px">Part of the <a href="https://bigdataieee.org/BigData2026/cup/">IEEE Big Data Cup 2026</a> — seven data challenges across AI, science, and society at the 2026 IEEE International Conference on Big Data.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>UrbanTwin Sim2Real LiDAR Challenge · IEEE BigData 2026 Cup · Phoenix, AZ</div>
+    <div><a href="https://www.codabench.org/competitions/16684/">LUMPI on Codabench</a> · <a href="https://www.codabench.org/competitions/16685/">V2X-Real on Codabench</a> · <a href="mailto:Muhammad.Shahbaz@ucf.edu">Contact</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var canvas = document.getElementById('lidar-canvas');
+  if (!canvas) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ctx = canvas.getContext('2d');
+  var pts = [], W, H, cx, cy;
+
+  function resize() {
+    var r = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width = r.width * devicePixelRatio;
+    H = canvas.height = r.height * devicePixelRatio;
+    cx = W * 0.72; cy = H * 0.55;
+    seed();
+  }
+  function seed() {
+    pts = [];
+    var rings = 26;
+    for (var i = 0; i < rings; i++) {
+      var rad = 30 + i * (Math.min(W, H) / rings) * 0.75;
+      var n = 40 + i * 7;
+      for (var j = 0; j < n; j++) {
+        var a = Math.random() * Math.PI * 2;
+        var jitter = (Math.random() - 0.5) * 14;
+        pts.push({ a: a, r: rad + jitter, z: Math.random() });
+      }
+    }
+  }
+  var sweep = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // scan rings
+    ctx.strokeStyle = 'rgba(142,162,255,0.06)';
+    ctx.lineWidth = 1;
+    for (var g = 1; g <= 8; g++) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, g * Math.min(W, H) / 9, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      var x = cx + Math.cos(p.a) * p.r * 1.6;   // squash to feel like a ground plane
+      var y = cy + Math.sin(p.a) * p.r * 0.55;
+      if (x < -20 || x > W + 20 || y < -20 || y > H + 20) continue;
+      var d = ((p.a - sweep) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+      var glow = Math.max(0, 1 - d / 1.4);      // brighter just behind the sweep
+      var base = 0.10 + p.z * 0.14;
+      var alpha = base + glow * 0.55;
+      var warm = p.z > 0.5;
+      ctx.fillStyle = warm
+        ? 'rgba(255,180,84,' + alpha * 0.8 + ')'
+        : 'rgba(79,214,224,' + alpha * 0.8 + ')';
+      var s = (0.9 + p.z * 1.4) * devicePixelRatio;
+      ctx.fillRect(x, y, s, s);
+    }
+    // sweep line
+    ctx.strokeStyle = 'rgba(142,162,255,0.35)';
+    ctx.lineWidth = 1.2 * devicePixelRatio;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(sweep) * W, cy + Math.sin(sweep) * W * 0.4);
+    ctx.stroke();
+    sweep += 0.008;
+  }
+  function loop() { draw(); requestAnimationFrame(loop); }
+  window.addEventListener('resize', resize);
+  resize();
+  if (reduced) { sweep = 2.2; draw(); } else { loop(); }
+})();
+</script>
+</body>
+</html>
