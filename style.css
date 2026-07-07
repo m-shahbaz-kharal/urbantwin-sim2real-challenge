@@ -89,6 +89,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .fact .k { font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
 .fact .v { font-family: "Space Grotesk", sans-serif; font-size: 1.12rem; font-weight: 600; margin-top: 2px; }
 
+/* hero dates timeline strip */
+.hero-dates { margin-top: 34px; border-top: 2px solid var(--line); padding-top: 18px; gap: 44px; }
+.hero-dates .fact { position: relative; }
+.hero-dates .fact::before {
+  content: ""; position: absolute; top: -25px; left: 1px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--ink-950); border: 2px solid var(--accent);
+}
+.hero-dates .fact:nth-child(4)::before { background: var(--accent); } /* final deadline emphasized */
+
 /* ---------- sections ---------- */
 section { padding: 72px 0; border-bottom: 1px solid var(--line); }
 section:last-of-type { border-bottom: none; }
