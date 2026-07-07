@@ -127,10 +127,27 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .hero-bg .lumpi-cell::after { background: var(--lumpi); box-shadow: 0 0 18px 3px rgba(255,180,84,0.55); }
 .hero-bg .v2x-cell::after { background: var(--v2x); box-shadow: 0 0 18px 3px rgba(79,214,224,0.55); }
-.hero-bg .cell:nth-child(1) img, .hero-bg .cell:nth-child(1)::after { animation-delay: 0s; }
-.hero-bg .cell:nth-child(2) img, .hero-bg .cell:nth-child(2)::after { animation-delay: 4.5s; }
-.hero-bg .cell:nth-child(3) img, .hero-bg .cell:nth-child(3)::after { animation-delay: 9s; }
-.hero-bg .cell:nth-child(4) img, .hero-bg .cell:nth-child(4)::after { animation-delay: 13.5s; }
+.hero-bg .cell:nth-child(1) img, .hero-bg .cell:nth-child(1)::after, .hero-bg .cell:nth-child(1) .cell-label { animation-delay: 0s; }
+.hero-bg .cell:nth-child(2) img, .hero-bg .cell:nth-child(2)::after, .hero-bg .cell:nth-child(2) .cell-label { animation-delay: 4.5s; }
+.hero-bg .cell:nth-child(3) img, .hero-bg .cell:nth-child(3)::after, .hero-bg .cell:nth-child(3) .cell-label { animation-delay: 9s; }
+.hero-bg .cell:nth-child(4) img, .hero-bg .cell:nth-child(4)::after, .hero-bg .cell:nth-child(4) .cell-label { animation-delay: 13.5s; }
+.cell-label {
+  position: absolute; right: 16px; bottom: 12px; opacity: 0;
+  font-family: "IBM Plex Mono", monospace; font-size: 0.74rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  animation: hf-label 18s linear infinite;
+}
+.lumpi-cell .cell-label { color: rgba(255,180,84,0.6); }
+.v2x-cell .cell-label { color: rgba(79,214,224,0.6); }
+@keyframes hf-label {
+  0%   { opacity: 0; }
+  3%   { opacity: 0.85; }
+  22%  { opacity: 0.85; }
+  40%  { opacity: 0.45; }
+  90%  { opacity: 0.45; }
+  99%  { opacity: 0; }
+  100% { opacity: 0; }
+}
 @keyframes hf-draw {
   0%   { clip-path: inset(0 100% 0 0); opacity: 1; }
   22%  { clip-path: inset(0 0 0 0);    opacity: 1; }
@@ -153,6 +170,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 @media (prefers-reduced-motion: reduce) {
   .hero-bg img { animation: none; clip-path: none; opacity: 0.9; }
   .hero-bg .cell::after { display: none; }
+  .cell-label { animation: none; opacity: 0.45; }
 }
 
 /* ---------- sections ---------- */
