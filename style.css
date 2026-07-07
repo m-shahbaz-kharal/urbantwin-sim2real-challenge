@@ -50,6 +50,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .nav-inner { display: flex; align-items: center; gap: 20px; height: 64px; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
 .nav-brand { display: flex; align-items: center; gap: 10px; font-family: "Space Grotesk", sans-serif; font-weight: 700; color: var(--text); font-size: 1.02rem; white-space: nowrap; }
 .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+.nav-logo { height: 36px; width: auto; border-radius: 6px; }
+@media (max-width: 760px) { .nav-logo { display: none; } }
 .nav-brand:hover { text-decoration: none; }
 .nav-links { display: flex; gap: 18px; margin-left: auto; flex-wrap: wrap; }
 .nav-links a { color: var(--text-dim); font-size: 0.92rem; }
@@ -68,7 +70,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
   background: rgba(23, 28, 43, 0.7); margin-bottom: 26px;
 }
 .hero h1 { font-size: clamp(1.2rem, 3.8vw, 2.8rem); font-weight: 700; max-width: none; white-space: nowrap; }
-.hero p.org-line { margin: 0 0 14px; font-size: clamp(0.78rem, 1.7vw, 0.98rem); max-width: none; white-space: nowrap; }
+.hero p.org-line, .track-hero p.org-line { margin: 0 0 14px; font-size: clamp(0.78rem, 1.7vw, 0.98rem); max-width: none; white-space: nowrap; }
+.track-hero .wrap { position: relative; }
+.track-hero .logo-strip { top: 0; }
+.track-hero .logo-strip img { height: 62px; }
 .hero h1 .thin { color: var(--text-dim); font-weight: 500; }
 .hero .sub { margin-top: 20px; max-width: 640px; color: var(--text-dim); font-size: 1.08rem; }
 .hero-ctas { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
