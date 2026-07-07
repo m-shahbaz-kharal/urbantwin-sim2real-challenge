@@ -190,7 +190,7 @@
       <div class="rule-box forbidden">
         <h3>✕ Forbidden</h3>
         <ul>
-          <li>Using real data for training in any form — including fine-tuning, hyperparameter selection, or domain adaptation. The detector must be trained on your synthetic data only.</li>
+          <li>Using real data for training, including fine-tuning. The detector must be trained on your synthetic data only.</li>
           <li>Training, validating, tuning on — or observing ground truth from — any frame in <code class="mono">forbidden_frames.txt</code>.</li>
           <li>Submitting predictions from a model trained on real labels for <em>any</em> roadside-LiDAR dataset. The detector must be sim-only.</li>
           <li>Probing submissions designed to reverse-engineer the held-out realism reference set via leaderboard signal.</li>
