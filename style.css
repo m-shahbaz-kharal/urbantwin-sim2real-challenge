@@ -90,7 +90,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .fact .v { font-family: "Space Grotesk", sans-serif; font-size: 1.12rem; font-weight: 600; margin-top: 2px; }
 
 /* hero dates timeline strip */
-.hero-dates { margin-top: 34px; border-top: 2px solid var(--line); padding-top: 18px; gap: 44px; }
+.hero-dates { margin-top: 34px; border-top: 2px solid var(--line); padding-top: 18px; display: grid; grid-template-columns: repeat(6, auto); justify-content: space-between; gap: 14px; }
+.hero-dates .fact .k { font-size: clamp(0.58rem, 0.85vw, 0.74rem); white-space: nowrap; }
+.hero-dates .fact .v { font-size: clamp(0.78rem, 1.25vw, 1.05rem); white-space: nowrap; }
 .hero-dates .fact { position: relative; }
 .hero-dates .fact::before {
   content: ""; position: absolute; top: -25px; left: 1px;
@@ -235,6 +237,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wr
 @media (max-width: 640px) {
   .tracks, .rule-cols, .steps, .metric-grid, .prizes { grid-template-columns: 1fr; }
   .hero h1, .hero p.org-line { white-space: normal; }
+  .hero-dates { grid-template-columns: repeat(2, auto); row-gap: 20px; }
   .nav-links { gap: 12px; }
   .hero-inner { padding: 70px 24px 60px; }
 }
